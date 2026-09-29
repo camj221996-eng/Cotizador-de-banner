@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cotizador de Banner de Vinil</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --green: #16a34a;
+      --amber: #d97706;
+      --red: #dc2626;
+      --card: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 30px -8px rgba(0,0,0,0.1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: linear-gradient(160deg, #e0e7ff 0%, #f0f4f8 40%, #f8fafc 100%);
+      min-height: 100vh;
+      color: var(--text);
+      padding: 28px 16px 48px;
+    }
+
+    .container { max-width: 900px; margin: 0 auto; }
+
+    header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.5px;
+    }
+    header p {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 6px;
+    }
+
+    .sizes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    @media (max-width: 700px) {
+      .sizes-grid { grid-template-columns: 1fr; }
+    }
+
+    .size-card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 22px 18px 20px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .size-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 40px -10px rgba(0,0,0,0.14);
+    }
+    .size-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+    }
+    .size-card.chico::before { background: var(--green); }
+    .size-card.mediano::before { background: var(--amber); }
+    .size-card.grande::before { background: var(--red); }
+
+    .size-label {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 4px 12px;
+      border-radius: 999px;
+      margin-bottom: 14px;
+    }
+    .chico .size-label { background: #dcfce7; color: #15803d; }
+    .mediano .size-label { background: #fef3c7; color: #b45309; }
+    .grande .size-label { background: #fee2e2; color: #b91c1c; }
+
+    .board-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 10px 0 16px;
+    }
+
+    .board-outer {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .board {
+      border: 2.5px solid #334155;
+      border-radius: 4px;
+      background: repeating-linear-gradient(
+        -45deg,
+        #f1f5f9,
+        #f1f5f9 6px,
+        #e2e8f0 6px,
+        #e2e8f0 12px
+      );
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chico .board { width: 70px; height: 70px; }
+    .mediano .board { width: 100px; height: 70px; }
+    .grande .board { width: 130px; height: 80px; }
+
+    .board-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #475569;
+      text-align: center;
+      line-height: 1.25;
+      padding: 4px;
+    }
+
+    .arrow-h {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      padding-top: 2px;
+    }
+    .arrow-h .line {
+      width: 1.5px;
+      flex: 1;
+      background: #64748b;
+      position: relative;
+    }
+    .arrow-h .line::before,
+    .arrow-h .line::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+    }
+    .arrow-h .line::before {
+      top: -1px;
+      border-bottom-color: #64748b;
+      border-top: none;
+    }
+    .arrow-h .line::after {
+      bottom: -1px;
+      border-top-color: #64748b;
+      border-bottom: none;
+    }
+    .arrow-h span {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #64748b;
+      margin: 4px 0;
+      letter-spacing: 0.3px;
+    }
+
+    .arrow-w {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 6px;
+      width: 100%;
+      justify-content: center;
+    }
+    .arrow-w .line {
+      height: 1.5px;
+      flex: 1;
+      max-width: 40px;
+      background: #64748b;
+      position: relative;
+    }
+    .arrow-w .line::before,
+    .arrow-w .line::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 4px solid transparent;
+    }
+    .arrow-w .line::before {
+      left: -1px;
+      border-right-color: #64748b;
+      border-left: none;
+    }
+    .arrow-w .line::after {
+      right: -1px;
+      border-left-color: #64748b;
+      border-right: none;
+    }
+    .arrow-w span {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: #64748b;
+      white-space: nowrap;
+    }
+
+    .size-dims {
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .size-price {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .size-price small {
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .size-range {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .card h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .unit-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .unit-btn {
+      flex: 1;
+      padding: 11px 8px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+      color: var(--text);
+    }
+    .unit-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .unit-btn:hover:not(.active) {
+      border-color: var(--primary);
+      background: #eff6ff;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 480px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    input {
+      padding: 13px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      font-family: inherit;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: #fff;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
+    }
+
+    .btn-calc {
+      width: 100%;
+      padding: 15px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-calc:hover { background: var(--primary-dark); }
+    .btn-calc:active { transform: scale(0.98); }
+
+    .result { display: none; animation: fadeIn 0.35s ease; }
+    .result.show { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .price-box {
+      background: linear-gradient(135deg, #eff6ff, #dbeafe);
+      border-radius: 14px;
+      padding: 26px;
+      text-align: center;
+      margin-bottom: 20px;
+      border: 1px solid #bfdbfe;
+    }
+    .price-box .label {
+      font-size: 0.88rem;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .price-box .amount {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .price-box .detail {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      margin-top: 12px;
+    }
+    .badge.chico { background: #dcfce7; color: #15803d; }
+    .badge.mediano { background: #fef3c7; color: #b45309; }
+    .badge.grande { background: #fee2e2; color: #b91c1c; }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 480px) {
+      .info-grid { grid-template-columns: 1fr; }
+    }
+    .info-item {
+      background: #f8fafc;
+      border-radius: 10px;
+      padding: 14px;
+      border: 1px solid var(--border);
+    }
+    .info-item .label {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 3px;
+    }
+    .info-item .value {
+      font-weight: 700;
+      font-size: 1.02rem;
+    }
+
+    .minimo-note {
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 14px;
+      padding: 10px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px dashed var(--border);
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <h1>?? Cotizador de Banner de Vinil</h1>
+      <p>Precio por pie² · Mínimo cobrable: 1 pie² · Convierte pulgadas y cm automáticamente</p>
+    </header>
+
+    <!-- TABLEROS VISUALES -->
+    <div class="sizes-grid">
+
+      <div class="size-card chico">
+        <div class="size-label">Chico</div>
+        <div class="board-wrap">
+          <div class="board-outer">
+            <div class="board">
+              <div class="board-text">BANNER<br>VINIL</div>
+            </div>
+            <div class="arrow-h" style="height:70px">
+              <div class="line"></div>
+              <span>Alto</span>
+              <div class="line"></div>
+            </div>
+          </div>
+          <div class="arrow-w" style="max-width:90px">
+            <div class="line"></div>
+            <span>Ancho</span>
+            <div class="line"></div>
+          </div>
+        </div>
+        <div class="size-dims">Ejemplo: 4 × 4 pies</div>
+        <div class="size-price">$1.75 <small>/ pie²</small></div>
+        <div class="size-range">Hasta 16 pies²</div>
+      </div>
+
+      <div class="size-card mediano">
+        <div class="size-label">Mediano</div>
+        <div class="board-wrap">
+          <div class="board-outer">
+            <div class="board">
+              <div class="board-text">BANNER<br>VINIL</div>
+            </div>
+            <div class="arrow-h" style="height:70px">
+              <div class="line"></div>
+              <span>Alto</span>
+              <div class="line"></div>
+            </div>
+          </div>
+          <div class="arrow-w" style="max-width:120px">
+            <div class="line"></div>
+            <span>Ancho</span>
+            <div class="line"></div>
+          </div>
+        </div>
+        <div class="size-dims">Ejemplo: 6 × 4 pies</div>
+        <div class="size-price">$1.50 <small>/ pie²</small></div>
+        <div class="size-range">De 16 a 30 pies²</div>
+      </div>
+
+      <div class="size-card grande">
+        <div class="size-label">Grande</div>
+        <div class="board-wrap">
+          <div class="board-outer">
+            <div class="board">
+              <div class="board-text">BANNER<br>VINIL</div>
+            </div>
+            <div class="arrow-h" style="height:80px">
+              <div class="line"></div>
+              <span>Alto</span>
+              <div class="line"></div>
+            </div>
+          </div>
+          <div class="arrow-w" style="max-width:150px">
+            <div class="line"></div>
+            <span>Ancho</span>
+            <div class="line"></div>
+          </div>
+        </div>
+        <div class="size-dims">Ejemplo: 10 × 4 pies</div>
+        <div class="size-price">$1.35 <small>/ pie²</small></div>
+        <div class="size-range">Más de 30 pies²</div>
+      </div>
+
+    </div>
+
+    <!-- CALCULADORA -->
+    <div class="card">
+      <h2>?? Calcula tu banner</h2>
+
+      <div class="unit-selector">
+        <button type="button" class="unit-btn active" data-unit="ft">Pies (ft)</button>
+        <button type="button" class="unit-btn" data-unit="in">Pulgadas (in)</button>
+        <button type="button" class="unit-btn" data-unit="cm">Centímetros (cm)</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="ancho">Ancho</label>
+          <input type="number" id="ancho" min="0" step="any" placeholder="Ej: 18" inputmode="decimal">
+        </div>
+        <div class="form-group">
+          <label for="alto">Alto</label>
+          <input type="number" id="alto" min="0" step="any" placeholder="Ej: 24" inputmode="decimal">
+        </div>
+      </div>
+
+      <button class="btn-calc" onclick="calcular()">Calcular precio</button>
+
+      <div class="minimo-note">
+        ?? <strong>Mínimo cobrable:</strong> 1 pie² · 
+        1 pie = 12 pulgadas · 1 pie = 30.48 cm
+      </div>
+    </div>
+
+    <!-- RESULTADO -->
+    <div class="card result" id="resultado">
+      <div class="price-box">
+        <div class="label">Precio estimado</div>
+        <div class="amount" id="precio">$0.00</div>
+        <div class="detail" id="detalle-area">—</div>
+        <div class="badge" id="badge-tamano">—</div>
+      </div>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="label">Medidas originales</div>
+          <div class="value" id="medidas-orig">—</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Convertido a pies</div>
+          <div class="value" id="medidas-pies">—</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Área real</div>
+          <div class="value" id="area">—</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Área cobrada</div>
+          <div class="value" id="area-cobrada">—</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Categoría</div>
+          <div class="value" id="categoria">—</div>
+        </div>
+        <div class="info-item">
+          <div class="label">Precio por pie²</div>
+          <div class="value" id="precio-unit">—</div>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Cotizador de banners de vinil · Mínimo 1 pie² · Conversión automática
+    </footer>
+  </div>
+
+  <script>
+    // Precios por pie cuadrado
+    const PRECIOS = {
+      chico: 1.75,
+      mediano: 1.50,
+      grande: 1.35
+    };
+
+    let unidadActual = 'ft';
+
+    // Selector de unidades
+    document.querySelectorAll('.unit-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.unit-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        unidadActual = btn.dataset.unit;
+      });
+    });
+
+    // Enter para calcular
+    document.getElementById('ancho').addEventListener('keydown', e => {
+      if (e.key === 'Enter') calcular();
+    });
+    document.getElementById('alto').addEventListener('keydown', e => {
+      if (e.key === 'Enter') calcular();
+    });
+
+    /**
+     * Convierte cualquier unidad a PIES
+     * 1 pie  = 12 pulgadas
+     * 1 pie  = 30.48 centímetros
+     */
+    function aPies(valor, unidad) {
+      if (unidad === 'ft') return valor;
+      if (unidad === 'in') return valor / 12;       // pulgadas ? pies
+      if (unidad === 'cm') return valor / 30.48;    // cm ? pies
+      return valor;
+    }
+
+    function nombreUnidad(u) {
+      return { ft: 'pies', in: 'pulgadas', cm: 'cm' }[u] || u;
+    }
+
+    function calcular() {
+      const anchoInput = parseFloat(document.getElementById('ancho').value);
+      const altoInput  = parseFloat(document.getElementById('alto').value);
+
+      if (!anchoInput || !altoInput || anchoInput <= 0 || altoInput <= 0) {
+        alert('Por favor ingresa medidas válidas (mayores a 0).');
+        return;
+      }
+
+      // 1. Convertir a pies
+      const anchoFt = aPies(anchoInput, unidadActual);
+      const altoFt  = aPies(altoInput, unidadActual);
+
+      // 2. Área real en pies²
+      const areaReal = anchoFt * altoFt;
+
+      // 3. Área cobrable: mínimo 1 pie²
+      const areaCobrada = Math.max(areaReal, 1);
+
+      // 4. Clasificar según el área REAL
+      let categoria, claseBadge, precioUnitario;
+      if (areaReal <= 16) {
+        categoria = 'Chico';
+        claseBadge = 'chico';
+        precioUnitario = PRECIOS.chico;
+      } else if (areaReal <= 30) {
+        categoria = 'Mediano';
+        claseBadge = 'mediano';
+        precioUnitario = PRECIOS.mediano;
+      } else {
+        categoria = 'Grande';
+        claseBadge = 'grande';
+        precioUnitario = PRECIOS.grande;
+      }
+
+      // 5. Precio final
+      const precio = areaCobrada * precioUnitario;
+
+      // Mostrar resultados
+      document.getElementById('precio').textContent = '$' + precio.toFixed(2);
+
+      let detalle = areaCobrada.toFixed(2) + ' pies² × $' + precioUnitario.toFixed(2) + ' = $' + precio.toFixed(2);
+      if (areaReal < 1) {
+        detalle += '  (mínimo 1 pie² aplicado)';
+      }
+      document.getElementById('detalle-area').textContent = detalle;
+
+      const badge = document.getElementById('badge-tamano');
+      badge.textContent = 'Tamaño ' + categoria;
+      badge.className = 'badge ' + claseBadge;
+
+      document.getElementById('medidas-orig').textContent =
+        anchoInput + ' × ' + altoInput + ' ' + nombreUnidad(unidadActual);
+
+      document.getElementById('medidas-pies').textContent =
+        anchoFt.toFixed(3) + ' × ' + altoFt.toFixed(3) + ' pies';
+
+      document.getElementById('area').textContent = areaReal.toFixed(3) + ' pies²';
+
+      document.getElementById('area-cobrada').textContent =
+        areaCobrada.toFixed(2) + ' pies²' + (areaReal < 1 ? ' (mínimo)' : '');
+
+      document.getElementById('categoria').textContent = categoria;
+      document.getElementById('precio-unit').textContent = '$' + precioUnitario.toFixed(2);
+
+      document.getElementById('resultado').classList.add('show');
+    }
+  </script>
+</body>
+</html>
